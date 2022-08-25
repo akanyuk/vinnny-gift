@@ -1,7 +1,6 @@
 	device zxspectrum48
 
-
-	; define _MUSIC_ 1
+	define _MUSIC_ 1
 
 	org #6000
 page0s	di : ld sp, page0s
@@ -10,14 +9,18 @@ page0s	di : ld sp, page0s
 
 	ld a,#be, i,a, hl,interr, (#beff),hl : im 2 : ei
 
-	ld hl, POEM
-	call screenReplace
-
 	ifdef _MUSIC_
 	call PT3PLAY
 	endif
 
-	ld b, 100 : halt : djnz $-1
+	ld b, 200 : halt : djnz $-1
+
+	ld hl, POEM
+	ld a, 8
+	call screenReplace
+
+	ld b, 255 : halt : djnz $-1
+	ld b, 80 : halt : djnz $-1
 
 	// Poem
 	ld hl, #5800 + 6*32 + 5
@@ -33,8 +36,8 @@ page0s	di : ld sp, page0s
 	inc hl
 	dec a : jr nz, .charLoop
 
-	dup 8
-	halt
+	dup 10
+	; halt
 	edup
 
 	pop hl
@@ -43,17 +46,17 @@ page0s	di : ld sp, page0s
 
 	pop af : dec a : jr nz, .lineLoop
 
+1	ld de, 2280 : ld hl, (INTS_COUNTER) : sbc hl, de : jr c, 1b
 
 	ld hl, amigaPlayer
 	call interrStart
 
-	ld b, 200 : halt : djnz $-1
-	ld b, 200 : halt : djnz $-1
-	ld b, 200 : halt : djnz $-1
+1	ld de, 2940 : ld hl, (INTS_COUNTER) : sbc hl, de : jr c, 1b
 
 	call interrStop
 
 	ld hl, FACE
+	ld a, 3
 	call screenReplace
 
 	jr $
@@ -88,6 +91,10 @@ interr	di
 
 	call interrCurrent
 
+	; счетчик интов
+INTS_COUNTER	equ $+1
+	ld hl, #0000 : inc hl : ld ($-3), hl
+
 	pop iy,ix,hl,de,bc,af
 	exx : ex af, af'
 	pop iy,ix,hl,de,bc,af
@@ -95,7 +102,9 @@ interr	di
 	ret
 
 	; hl - screen
-screenReplace	ld (.movePixels+1), hl
+	; a - speed
+screenReplace	ld (.spd + 1), a
+	ld (.movePixels+1), hl
 	ld de, #1800
 	add hl, de
 	ld (.moveAttrs+1), hl
@@ -138,7 +147,10 @@ screenReplace	ld (.movePixels+1), hl
 	pop de : inc de : ld (.moveAttrs+4),de
 	pop hl : inc hl : ld (.moveAttrs+1),hl	
 
+.spd	ld b, #01
 	halt
+	djnz $-1
+
 	pop bc
 	djnz .loop
 	ret
@@ -165,11 +177,8 @@ amigaPlayer	ld a, 0 : inc a : and #03 : ld (amigaPlayer + 1), a
 POEM	incbin "res/poem.bin"
 FACE	incbin "res/face.bin"
 
-	display $
-
-	org #c000
 PT3PLAY	include "src/PTxPlay.asm"
-	incbin "res/nq-underfiller-cut.pt3"
+	incbin "res/Irina Allegrova - Happy Birthday!-2.pt3"
 
 page0e	display /d, '[page 0] free: ', #ffff - $, ' (', $, ')'	
 	include "src/builder.asm"

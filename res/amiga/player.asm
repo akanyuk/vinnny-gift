@@ -55,4 +55,3 @@ NextFrame	ld HL,FRAMES
 	ex de,hl
 	ld (DisplayFrame+1),hl
 	ret
-
