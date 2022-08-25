@@ -6,7 +6,7 @@
 	org #6000
 page0s	di : ld sp, page0s
 	xor a : out (#fe), a 
-	ld hl, #4000 : ld de, #4001 : ld bc, #17ff : ld (hl), l : ldir
+	ld hl, #4000 : ld de, #4001 : ld bc, #1aff : ld (hl), l : ldir
 
 	ld a,#be, i,a, hl,interr, (#beff),hl : im 2 : ei
 
@@ -23,11 +23,11 @@ page0s	di : ld sp, page0s
 
 	// Poem
 	ld hl, #5800 + 6*32 + 5
-	ld a, 15
+	ld a, 16
 .lineLoop	push af
 	push hl
 
-	ld a, 23
+	ld a, 24
 .charLoop	ld (hl), %01111001
 	dup 4
 	halt
