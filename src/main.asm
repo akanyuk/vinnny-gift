@@ -4,8 +4,8 @@
 
 	org #6000
 page0s	di : ld sp, page0s
-	xor a : out (#fe), a 
-	ld hl, #4000 : ld de, #4001 : ld bc, #1aff : ld (hl), l : ldir
+	ld a, 7 : out (#fe), a 
+	ld hl, #5800 : ld de, #5801 : ld bc, #02ff : ld (hl), %00111000 : ldir
 
 	ld a,#be, i,a, hl,interr, (#beff),hl : im 2 : ei
 
@@ -29,7 +29,7 @@ page0s	di : ld sp, page0s
 	push hl
 
 	ld a, 24
-.charLoop	ld (hl), %01111001
+.charLoop	ld (hl), %00111001
 	dup 4
 	halt
 	edup
